@@ -1,0 +1,343 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Scarlet-Fairy",
+    "version": "1.0"
+  },
+  "tags": [
+    {
+      "name": "LogWatcher"
+    },
+    {
+      "name": "Manager"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/logs": {
+      "get": {
+        "operationId": "LogWatcher_GetLogs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufGetLogsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deployId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "LogWatcher"
+        ]
+      }
+    },
+    "/api/v1/manager": {
+      "get": {
+        "operationId": "Manager_GetDeploy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufGetDeployResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ]
+      },
+      "delete": {
+        "operationId": "Manager_Destroy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufDestroyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deployId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ]
+      },
+      "post": {
+        "operationId": "Manager_Deploy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufDeployResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protobufDeployRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Manager"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "BuildBuildStep": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "$ref": "#/definitions/BuildStepStep"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "BuildStepStep": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_STEP",
+        "CLONE",
+        "BUILD",
+        "PUSH"
+      ],
+      "default": "UNKNOWN_STEP"
+    },
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "protobufBuild": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/protobufBuildStatus"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BuildBuildStep"
+          }
+        }
+      }
+    },
+    "protobufBuildStatus": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN_STATUS",
+        "ERROR",
+        "LOADING",
+        "COMPLETED"
+      ],
+      "default": "UNKNOWN_STATUS"
+    },
+    "protobufDeploy": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "gitRepo": {
+          "type": "string"
+        },
+        "build": {
+          "$ref": "#/definitions/protobufBuild"
+        },
+        "workload": {
+          "$ref": "#/definitions/protobufWorkload"
+        }
+      }
+    },
+    "protobufDeployRequest": {
+      "type": "object",
+      "properties": {
+        "gitRepo": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "envs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protobufDeployResponse": {
+      "type": "object",
+      "properties": {
+        "deployId": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufDestroyResponse": {
+      "type": "object"
+    },
+    "protobufGetDeployResponse": {
+      "type": "object",
+      "properties": {
+        "deploy": {
+          "$ref": "#/definitions/protobufDeploy"
+        }
+      }
+    },
+    "protobufGetLogsResponse": {
+      "type": "object",
+      "properties": {
+        "logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufLog"
+          }
+        }
+      }
+    },
+    "protobufLog": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufWorkload": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "envs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Scarlet Fairy repository",
+    "url": "https://github.com/Scarlet-Fairy"
+  }
+}
