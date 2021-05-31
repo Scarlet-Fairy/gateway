@@ -22,6 +22,58 @@
     "application/json"
   ],
   "paths": {
+    "/api/v1/job": {
+      "get": {
+        "operationId": "Manager_GetDeploy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufGetDeployResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "deployId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/api/v1/jobs": {
+      "get": {
+        "operationId": "Manager_ListDeploys",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protobufListDeploysResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
     "/api/v1/logs": {
       "get": {
         "operationId": "LogWatcher_GetLogs",
@@ -67,34 +119,6 @@
       }
     },
     "/api/v1/manager": {
-      "get": {
-        "operationId": "Manager_GetDeploy",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/protobufGetDeployResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "deployId",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "Manager"
-        ]
-      },
       "delete": {
         "operationId": "Manager_Destroy",
         "responses": {
@@ -303,6 +327,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/protobufLog"
+          }
+        }
+      }
+    },
+    "protobufListDeploysResponse": {
+      "type": "object",
+      "properties": {
+        "deploys": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufDeploy"
           }
         }
       }

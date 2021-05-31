@@ -105,6 +105,7 @@ type ManagerClient interface {
 	Deploy(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*DeployResponse, error)
 	Destroy(ctx context.Context, in *DestroyRequest, opts ...grpc.CallOption) (*DestroyResponse, error)
 	GetDeploy(ctx context.Context, in *GetDeployRequest, opts ...grpc.CallOption) (*GetDeployResponse, error)
+	ListDeploys(ctx context.Context, in *ListDeploysRequest, opts ...grpc.CallOption) (*ListDeploysResponse, error)
 }
 
 type managerClient struct {
@@ -142,6 +143,15 @@ func (c *managerClient) GetDeploy(ctx context.Context, in *GetDeployRequest, opt
 	return out, nil
 }
 
+func (c *managerClient) ListDeploys(ctx context.Context, in *ListDeploysRequest, opts ...grpc.CallOption) (*ListDeploysResponse, error) {
+	out := new(ListDeploysResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.Manager/ListDeploys", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ManagerServer is the server API for Manager service.
 // All implementations should embed UnimplementedManagerServer
 // for forward compatibility
@@ -149,6 +159,7 @@ type ManagerServer interface {
 	Deploy(context.Context, *DeployRequest) (*DeployResponse, error)
 	Destroy(context.Context, *DestroyRequest) (*DestroyResponse, error)
 	GetDeploy(context.Context, *GetDeployRequest) (*GetDeployResponse, error)
+	ListDeploys(context.Context, *ListDeploysRequest) (*ListDeploysResponse, error)
 }
 
 // UnimplementedManagerServer should be embedded to have forward compatible implementations.
@@ -163,6 +174,9 @@ func (UnimplementedManagerServer) Destroy(context.Context, *DestroyRequest) (*De
 }
 func (UnimplementedManagerServer) GetDeploy(context.Context, *GetDeployRequest) (*GetDeployResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDeploy not implemented")
+}
+func (UnimplementedManagerServer) ListDeploys(context.Context, *ListDeploysRequest) (*ListDeploysResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDeploys not implemented")
 }
 
 // UnsafeManagerServer may be embedded to opt out of forward compatibility for this service.
@@ -230,6 +244,24 @@ func _Manager_GetDeploy_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Manager_ListDeploys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDeploysRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManagerServer).ListDeploys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.Manager/ListDeploys",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManagerServer).ListDeploys(ctx, req.(*ListDeploysRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Manager_ServiceDesc is the grpc.ServiceDesc for Manager service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -248,6 +280,10 @@ var Manager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDeploy",
 			Handler:    _Manager_GetDeploy_Handler,
+		},
+		{
+			MethodName: "ListDeploys",
+			Handler:    _Manager_ListDeploys_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

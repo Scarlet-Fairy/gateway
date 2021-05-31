@@ -60,7 +60,13 @@ service Manager {
   }
   rpc GetDeploy(GetDeployRequest) returns (GetDeployResponse) {
     option (google.api.http) = {
-      get: "/api/v1/manager"
+      get: "/api/v1/job"
+    };
+  }
+
+  rpc ListDeploys(ListDeploysRequest) returns (ListDeploysResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/jobs"
     };
   }
 }
@@ -130,4 +136,10 @@ message GetDeployRequest {
 
 message GetDeployResponse {
   Deploy deploy = 1;
+}
+
+message ListDeploysRequest {}
+
+message ListDeploysResponse {
+  repeated Deploy deploys = 1;
 }
