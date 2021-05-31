@@ -85,7 +85,7 @@
         },
         "parameters": [
           {
-            "name": "name",
+            "name": "deployId",
             "in": "query",
             "required": false,
             "type": "string"
