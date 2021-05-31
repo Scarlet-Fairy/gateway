@@ -332,6 +332,9 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "url": {
+          "type": "string"
         }
       }
     }
